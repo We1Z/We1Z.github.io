@@ -42,13 +42,11 @@ const education = [
   { role: "BSc Chemistry", org: "University of Calgary", date: "2014 — 2018" }
 ];
 
-/* ---------- SKILLS ---------- */
+/* ---------- SKILLS (grouped) ---------- */
 const skills = [
-  "Python", "MEL", "Bash / Shell", "JSON · YAML", "Git · GitLab CI",
-  "Unreal Engine 5", "Maya", "Houdini", "Blender", "Unity", "ZBrush", "Substance Suite",
-  "ShotGrid / sgtk", "Perforce", "Environment & Build Systems",
-  "Hard-Surface Modeling", "Character Rigging", "Texturing & Surfacing",
-  "Lighting & Rendering", "Set Dressing", "Realtime Materials"
+  { group: "Pipeline & Code", items: ["Python", "MEL", "Bash / Shell", "JSON · YAML", "Git · GitLab CI", "ShotGrid / sgtk", "Perforce"] },
+  { group: "Engines & DCC", items: ["Unreal Engine 5", "Maya", "Houdini", "Blender", "Unity", "ZBrush", "Substance Suite"] },
+  { group: "3D Craft", items: ["Hard-Surface Modeling", "Character Rigging", "Texturing & Surfacing", "Lighting & Rendering", "Set Dressing", "Realtime Materials"] }
 ];
 
 /* ---------- RENDER ---------- */
@@ -91,12 +89,30 @@ document.getElementById("eduList").innerHTML = education.map((e, i) => `
     <p class="xrow__org">${e.org}<span>${e.date}</span></p>
   </div>`).join("");
 
-/* Skills — sky-block mosaic */
-document.getElementById("skillsGrid").innerHTML = skills.map((s, i) => `
-  <div class="sblock reveal" style="--d:${Math.min(i * .04, .32)}s">
-    <span class="sblock__icon">✚</span>
-    <span class="sblock__label">${s}</span>
-  </div>`).join("");
+/* Skills — grouped chips */
+document.getElementById("skillsGrid").innerHTML = `<div class="sgroups">` + skills.map((g, gi) => `
+  <div class="sgroup reveal" style="--d:${gi * .08}s">
+    <h3 class="sgroup__label">${g.group}</h3>
+    <div class="sgroup__chips">${g.items.map(s => `<span class="chip">${s}</span>`).join("")}</div>
+  </div>`).join("") + `</div>`;
+
+/* ---------- day / night toggle ---------- */
+(function () {
+  const btn = document.getElementById("themeToggle");
+  const rootEl = document.documentElement;
+  function apply(pal) {
+    if (!pal) return;
+    for (const k in pal) if (!k.startsWith("_")) rootEl.style.setProperty("--" + k, pal[k]);
+  }
+  btn.addEventListener("click", () => {
+    const night = rootEl.getAttribute("data-theme") !== "night";
+    if (night) rootEl.setAttribute("data-theme", "night");
+    else rootEl.removeAttribute("data-theme");
+    try { localStorage.setItem("wz-theme", night ? "night" : "day"); } catch (e) {}
+    /* theme.json palettes take precedence over stylesheet defaults */
+    if (window.__wzTheme) apply(window.__wzTheme[night ? "night" : "day"] || window.__wzTheme.day);
+  });
+})();
 
 /* ---------- footer: year + Vancouver clock ---------- */
 (function () {
