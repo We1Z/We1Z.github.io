@@ -1,17 +1,31 @@
 {
-  "_readme": "Theme config — edit and refresh. Set 'active' to a preset name, or edit the preset's hex values. The loader (index.html) applies every key below as a CSS variable, so all colors follow from these tokens. Requires serving over http (localhost server or GitHub Pages). If opened via file:// the site falls back to the defaults baked into styles.css.",
+  "_readme": "Theme config — edit and refresh. 'active' picks the preset; each preset has a 'day' and 'night' palette. The loader (index.html) applies every key as a CSS variable, and the nav toggle switches palettes (choice saved in the browser). If opened via file:// the site falls back to the palettes baked into styles.css.",
   "active": "studio",
   "themes": {
     "studio": {
       "_note": "light editorial CV — olive gold blocks + sky blue accents (Wix wh-1327 palette)",
-      "gold": "#8B6522",
-      "gold-deep": "#694F23",
-      "sky": "#A8D2FF",
-      "sky-deep": "#86BDF5",
-      "paper": "#ffffff",
-      "ink": "#1c1a16",
-      "ink-soft": "#5c5648",
-      "line": "#e7e1d3"
+      "day": {
+        "gold": "#8B6522",
+        "gold-deep": "#694F23",
+        "sky": "#A8D2FF",
+        "sky-deep": "#86BDF5",
+        "paper": "#ffffff",
+        "ink": "#1c1a16",
+        "ink-soft": "#5c5648",
+        "line": "#e7e1d3",
+        "on-sky": "#1c1a16"
+      },
+      "night": {
+        "gold": "#8B6522",
+        "gold-deep": "#C9A86A",
+        "sky": "#A8D2FF",
+        "sky-deep": "#86BDF5",
+        "paper": "#171410",
+        "ink": "#EDE8DC",
+        "ink-soft": "#A79E8B",
+        "line": "#2e2a20",
+        "on-sky": "#1c1a16"
+      }
     }
   }
 }
