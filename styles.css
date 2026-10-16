@@ -752,6 +752,7 @@ a { color: inherit; text-decoration: none; }
 .contact__foot i { color: var(--blue-soft); font-style: normal; }
 
 /* ---------- reveal animation ---------- */
+.workgrid__empty { color: var(--faint); font-size: .8rem; letter-spacing: .14em; padding: 60px 0; text-align: center; border: 1px dashed var(--line); border-radius: 8px; }
 
 .reveal { opacity: 0; transform: translateY(26px); transition: opacity .9s var(--ease), transform .9s var(--ease); transition-delay: var(--d, 0s); }
 .reveal.is-in { opacity: 1; transform: none; }
