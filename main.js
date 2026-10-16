@@ -6,68 +6,9 @@
 
 /* ---------- 01 · SELECTED WORK ---------- */
 const work = [
-  {
-    kind: "featured",
-    date: "2023 — PRESENT",
-    code: "UE-PIPE-TD",
-    org: "WILDBRAIN STUDIOS · VANCOUVER",
-    title: "Unreal Production Tools on the Studio Pipeline Framework",
-    desc: "The studio's Unreal pipeline framework was built by a colleague; I build the production tool layer on top of it and feed improvements back down. Six tools in daily use: asset & shot importers, crowd VAT baking, light rig workflow, turntable scripted actions, and a light mixer — plus custom C++ where Python can't reach. UE 5.8, wired into ShotGrid, Perforce and the render farm.",
-    tags: ["Unreal Engine 5.8", "Python 3.11", "C++ / Blueprint Function Libraries", "Asset & Shot Importers", "VAT Crowd Baking", "Light Rig · Light Mixer", "ShotGrid · Perforce"],
-    visual: "nodemap",
-    link: null,
-    writeup: [
-      { label: "Problem", text: "The framework supplies the plumbing — menus, bootstrap, shared APIs — but artists still need show-floor tools: getting assets and shots into the engine, baking crowds, building and mixing light rigs, and turning turntables. Done by hand, those jobs ate artist hours every day." },
-      { label: "Approach", text: "Built six production tools on the framework in Python, and extended the framework itself where the editor exposed no API: custom C++ Blueprint Function Libraries exposing User-Defined Enum editing and Blueprint component manipulation (add / reparent / inherited-template overrides), plus a crowd VAT baker — skeletal animation baked to vertex-animation textures with auto-fit bake resolution and skeletal→static mesh conversion. Daily scripting keeps feeding fixes and utilities back into the shared framework." },
-      { label: "Result", text: "Import, crowd, lighting and turntable work that used to be manual is now one-click and repeatable on the show — and every new tool lands on a framework that gets stronger with each production." }
-    ]
-  },
-  {
-    kind: "case",
-    date: "2022 — 2023",
-    code: "TECH-ART",
-    org: "WILDBRAIN STUDIOS · STRAWBERRY SHORTCAKE 3D SPECIALS",
-    title: "Technical Artist on a Netflix-bound series",
-    desc: "Kept assets and workflows healthy across departments — rigging, surfacing, modeling and render fixes (lighting glitches, render presets) — and built Unreal Blueprints, Editor Utility Widgets, material functions and FX to automate the repetitive and invent the new. Aired on Family Jr in Canada and Netflix in the US.",
-    tags: ["Unreal Engine", "Blueprints", "Editor Utility Widgets", "Materials & FX", "Maya", "Arnold"],
-    visual: "dossier",
-    link: { label: "VIEW ON IMDB", href: "https://www.imdb.com/title/tt29389870/" }
-  },
-  {
-    kind: "case",
-    date: "2022",
-    code: "VIRTUAL-PROD",
-    org: "BRON STUDIOS · VANCOUVER",
-    title: "UE Generalist for Virtual Production",
-    desc: "Scene assembly, debugging and performance optimization in UE4 for the virtual-production stage; render-footage setup and QC; virtual-camera data integration. Made rapid technical changes — lighting, animation, set dressing, color correction — to hit the key creatives' goals in an iterative, on-set-paced pipeline.",
-    tags: ["UE4", "Virtual Camera", "Scene Optimization", "Lighting", "Render QC"],
-    visual: "dossier",
-    link: null
-  },
-  {
-    kind: "case",
-    date: "2021",
-    code: "CINEMATICS",
-    org: "IGG CANADA · LORDS MOBILE UA TEAM",
-    title: "Cinematic Designer",
-    desc: "Storyboarded marketing content and assembled live-action, gameplay and animated footage into trailers and promotional pieces, bringing pitch beats to life in Unreal before the edit.",
-    tags: ["Unreal Engine", "Trailer Editing", "Storyboarding", "Previs"],
-    visual: "dossier",
-    link: null
-  },
-  {
-    kind: "case",
-    date: "2021",
-    code: "GAME-DEV",
-    org: "VANCOUVER FILM SCHOOL · FINAL PROJECT",
-    title: "Tokyo Takeover — Stealth-Horror Game",
-    desc: "Third-person stealth horror set in a shopping mall overrun by blind mutants. Sculpted five characters in ZBrush, modelled and textured ~90% of props (high/low poly), rigged the bat-mutant enemy and prepared humanoid rigs for mocap, then lit and set-dressed all three levels in Unity.",
-    tags: ["Unity", "Maya", "ZBrush", "Substance Painter", "Rigging", "Lighting"],
-    visual: "image",
-    img: "assets/work/tokyotakeover_gameplay.jpg",
-    alt: "Top-down gameplay view of Tokyo Takeover: a blind mutant hunting through a neon-lit shopping mall atrium in Unity",
-    link: { label: "VIEW ON ARTSTATION", href: "https://www.artstation.com/artwork/WKNPAJ" }
-  }
+  // Work section intentionally cleared for a rebuild.
+  // Previous 5 entries (WildBrain featured card + 4 cases) are in git history —
+  // recover with:  git show 1131a01:main.js
 ];
 
 /* ---------- DEMO DOCS (opened by clicking nodemap nodes) ---------- */
@@ -289,7 +230,9 @@ function visualHTML(item, i) {
   </div>`;
 }
 
-document.getElementById("workGrid").innerHTML = work.map((item, i) => `
+document.getElementById("workGrid").innerHTML = work.length === 0
+  ? `<p class="workgrid__empty mono reveal">// case files in curation — new writeups shipping soon</p>`
+  : work.map((item, i) => `
   <article class="case ${item.kind === "featured" ? "case--featured" : ""} reveal"${item.kind === "featured" ? ' id="featuredCard"' : ""} style="--d:${Math.min(i * .08, .32)}s">
     ${visualHTML(item, i)}
     <div class="case__body"${item.kind === "featured" ? ' id="featuredBody"' : ""}>
