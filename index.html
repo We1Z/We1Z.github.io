@@ -34,13 +34,24 @@
     const cfg = await (await fetch("theme.json")).json();
     const t = cfg.themes[cfg.active];
     if (!t) return;
+    window.__wzTheme = t; /* day + night palettes, reused by the toggle */
+    const mode = localStorage.getItem("wz-theme") === "night" ? "night" : "day";
+    const pal = t[mode] || t.day || t;
     const root = document.documentElement.style;
-    for (const k in t) if (!k.startsWith("_")) root.setProperty("--" + k, t[k]);
-    const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='${t.gold}'/><circle cx='16' cy='16' r='7' fill='none' stroke='${t.sky}' stroke-width='3'/></svg>`;
+    for (const k in pal) if (!k.startsWith("_")) root.setProperty("--" + k, pal[k]);
+    const fav = (t.day || t);
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='${fav.gold}'/><circle cx='16' cy='16' r='7' fill='none' stroke='${fav.sky}' stroke-width='3'/></svg>`;
     let link = document.querySelector("link[rel='icon']");
     if (link) link.href = "data:image/svg+xml," + encodeURIComponent(svg);
   } catch (e) { /* no theme.json or file:// — keep stylesheet defaults */ }
 })();
+</script>
+<script>
+/* Restore saved day/night mode before first paint (no flash) */
+try {
+  if (localStorage.getItem("wz-theme") === "night")
+    document.documentElement.setAttribute("data-theme", "night");
+} catch (e) {}
 </script>
 </head>
 <body>
@@ -55,6 +66,10 @@
     <a href="#experience">Experience</a>
     <a href="#skills">Skills</a>
     <a href="#contact">Contact</a>
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle day / night mode">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4.4"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5 5l1.7 1.7M17.3 17.3L19 19M19 5l-1.7 1.7M6.7 17.3L5 19"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.4 14.2A8.5 8.5 0 1 1 9.8 3.6a7 7 0 1 0 10.6 10.6z"/></svg>
+    </button>
   </nav>
 </header>
 
