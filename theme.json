@@ -1,0 +1,62 @@
+{
+  "_readme": "Theme config \u2014 edit and refresh. Set 'active' to a preset name, or edit the preset's hex values. All colors below follow from these 11 tokens. Requires serving over http (localhost server). If opened via file:// the site falls back to the built-in Jedi green in styles.css.",
+  "active": "cyan",
+  "themes": {
+    "jedi": {
+      "_note": "Luke's ROTJ saber green (default)",
+      "ink": "#070d09",
+      "ink-2": "#0a130d",
+      "panel": "#0e1a12",
+      "panel-2": "#13221a",
+      "bone": "#e8f7ec",
+      "bone-dim": "#9fb9a8",
+      "dim": "#718a79",
+      "faint": "#4d6355",
+      "blue": "#2ee07a",
+      "blue-soft": "#b3f7cf",
+      "blue-deep": "#0f9d58"
+    },
+    "cyan": {
+      "_note": "electric cyan",
+      "ink": "#070d0f",
+      "ink-2": "#0b1316",
+      "panel": "#0f1a1e",
+      "panel-2": "#142228",
+      "bone": "#e5f6f8",
+      "bone-dim": "#9fb8bc",
+      "dim": "#70878c",
+      "faint": "#4a5f64",
+      "blue": "#22d3ee",
+      "blue-soft": "#a5f3fc",
+      "blue-deep": "#0891b2"
+    },
+    "azure": {
+      "_note": "signal blue",
+      "ink": "#090d14",
+      "ink-2": "#0c1119",
+      "panel": "#111826",
+      "panel-2": "#17202f",
+      "bone": "#e6edf6",
+      "bone-dim": "#9db1c6",
+      "dim": "#6f8093",
+      "faint": "#49586a",
+      "blue": "#3d8bff",
+      "blue-soft": "#9ec7ff",
+      "blue-deep": "#5b8fd6"
+    },
+    "amber": {
+      "_note": "original sodium amber",
+      "ink": "#100c08",
+      "ink-2": "#161009",
+      "panel": "#1e1710",
+      "panel-2": "#282014",
+      "bone": "#f4ece1",
+      "bone-dim": "#b8a88f",
+      "dim": "#8c8270",
+      "faint": "#645c4a",
+      "blue": "#ff7a1a",
+      "blue-soft": "#ffc49e",
+      "blue-deep": "#c2570a"
+    }
+  }
+}

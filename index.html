@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Wei Zeng — Unreal Pipeline TD / Technical Artist</title>
+<meta name="description" content="Wei Zeng is an Unreal Pipeline TD and Technical Artist in Vancouver — the bridge between art and engineering. Builds production tools (importers, crowd VAT, lighting) on the studio Unreal framework at WildBrain." />
+<link rel="canonical" href="https://we1z.github.io/" />
+<!-- social preview -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://we1z.github.io/" />
+<meta property="og:site_name" content="Wei Zeng — Unreal Pipeline TD" />
+<meta property="og:title" content="Wei Zeng — Unreal Pipeline TD / Technical Artist" />
+<meta property="og:description" content="Unreal Pipeline TD &amp; Technical Artist in Vancouver — production tools, crowd VAT baking, light rigs and ShotGrid integration on Unreal Engine 5.8." />
+<meta property="og:image" content="https://we1z.github.io/assets/og-card.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Wei Zeng — Unreal Pipeline TD / Technical Artist, Vancouver" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Wei Zeng — Unreal Pipeline TD / Technical Artist" />
+<meta name="twitter:description" content="Unreal Pipeline TD &amp; Technical Artist in Vancouver — production tools, crowd VAT baking, light rigs and ShotGrid integration on Unreal Engine 5.8." />
+<meta name="twitter:image" content="https://we1z.github.io/assets/og-card.png" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23070d09'/%3E%3Ccircle cx='8' cy='16' r='4' fill='none' stroke='%232ee07a' stroke-width='2'/%3E%3Ccircle cx='24' cy='8' r='3' fill='none' stroke='%23e8f7ec' stroke-width='2'/%3E%3Ccircle cx='24' cy='24' r='3' fill='none' stroke='%23e8f7ec' stroke-width='2'/%3E%3Cpath d='M12 16h9M21 11l-6 4M21 21l-6-4' stroke='%232ee07a' stroke-width='2'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=general-sans@400,500,600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<script>
+/* Theme loader — reads theme.json, applies palette as CSS vars + favicon.
+   Edit theme.json to recolor the whole site; falls back to styles.css defaults. */
+(async function () {
+  try {
+    const cfg = await (await fetch("theme.json")).json();
+    const t = cfg.themes[cfg.active];
+    if (!t) return;
+    const root = document.documentElement.style;
+    for (const k in t) if (!k.startsWith("_")) root.setProperty("--" + k, t[k]);
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='${t.ink}'/><circle cx='8' cy='16' r='4' fill='none' stroke='${t.blue}' stroke-width='2'/><circle cx='24' cy='8' r='3' fill='none' stroke='${t.bone}' stroke-width='2'/><circle cx='24' cy='24' r='3' fill='none' stroke='${t.bone}' stroke-width='2'/><path d='M12 16h9M21 11l-6 4M21 21l-6-4' stroke='${t.blue}' stroke-width='2'/></svg>`;
+    let link = document.querySelector("link[rel='icon']");
+    if (link) link.href = "data:image/svg+xml," + encodeURIComponent(svg);
+  } catch (e) { /* no theme.json or file:// — keep stylesheet defaults */ }
+})();
+</script>
+</head>
+<body>
+
+<!-- scroll progress -->
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<!-- grain overlay -->
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ============ NAV ============ -->
+<header class="nav" id="nav">
+  <a class="nav__brand" href="#top" aria-label="Wei Zeng — home">
+    <svg class="nav__mark" width="22" height="22" viewBox="0 0 32 32" aria-hidden="true">
+      <circle cx="8" cy="16" r="4" fill="none" stroke="var(--blue)" stroke-width="2.4"/>
+      <circle cx="24" cy="8" r="3" fill="none" stroke="var(--bone)" stroke-width="2.4"/>
+      <circle cx="24" cy="24" r="3" fill="none" stroke="var(--bone)" stroke-width="2.4"/>
+      <path d="M12 16h9M21 11l-6 4M21 21l-6-4" stroke="var(--blue)" stroke-width="2.4"/>
+    </svg>
+    <span class="nav__name">WEI&nbsp;ZENG</span>
+  </a>
+  <nav class="nav__links" aria-label="Primary">
+    <a href="#work"><span class="nav__idx">01</span>Work</a>
+    <a href="#origins"><span class="nav__idx">02</span>Origins</a>
+    <a href="#about"><span class="nav__idx">03</span>About</a>
+    <a href="#stack"><span class="nav__idx">04</span>Stack</a>
+    <a href="#contact"><span class="nav__idx">05</span>Contact</a>
+  </nav>
+</header>
+
+<main id="top">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <svg class="hero__graph" aria-hidden="true" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="edge" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" style="stop-color:var(--blue)" stop-opacity=".55"/>
+          <stop offset="100%" style="stop-color:var(--blue)" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <g class="graph__edges" fill="none" stroke-width="1.2">
+        <path d="M120 140 L360 90 L640 180 L880 120" class="flow flow--a"/>
+        <path d="M120 140 L300 330 L560 300 L820 420 L930 560" class="flow flow--b"/>
+        <path d="M360 90 L420 480 L640 180" class="flow flow--c"/>
+        <path d="M300 330 L200 560 L420 480 L560 620 L820 420" class="flow flow--d"/>
+        <path d="M560 300 L560 620 M640 180 L820 420 M420 480 L200 560" class="flow flow--e"/>
+      </g>
+      <g class="graph__nodes">
+        <g class="gnode gnode--core"><circle cx="120" cy="140" r="7"/><circle cx="120" cy="140" r="7" class="gnode__halo"/></g>
+        <g class="gnode"><circle cx="360" cy="90" r="5"/></g>
+        <g class="gnode"><circle cx="640" cy="180" r="5"/></g>
+        <g class="gnode"><circle cx="880" cy="120" r="5"/></g>
+        <g class="gnode"><circle cx="300" cy="330" r="5"/></g>
+        <g class="gnode gnode--accent"><circle cx="560" cy="300" r="6"/><circle cx="560" cy="300" r="6" class="gnode__halo"/></g>
+        <g class="gnode"><circle cx="820" cy="420" r="5"/></g>
+        <g class="gnode"><circle cx="420" cy="480" r="5"/></g>
+        <g class="gnode"><circle cx="200" cy="560" r="4"/></g>
+        <g class="gnode"><circle cx="560" cy="620" r="4"/></g>
+        <g class="gnode"><circle cx="930" cy="560" r="4"/></g>
+      </g>
+    </svg>
+
+    <div class="hero__ghost" aria-hidden="true">PIPELINE</div>
+
+    <div class="hero__inner">
+      <p class="hero__kicker mono reveal">
+        <span class="hero__kicker-rule"></span>
+        PORTFOLIO.MANIFEST — REV.2026.10 — VANCOUVER, CA&nbsp;<span class="hero__clock" id="heroClock">--:--</span>
+      </p>
+      <h1 class="hero__title">
+        <span class="hero__line reveal" style="--d:.05s">WEI</span>
+        <span class="hero__line hero__line--outline reveal" style="--d:.18s">ZENG</span>
+      </h1>
+      <p class="hero__roles mono reveal" style="--d:.34s">
+        <span>UNREAL&nbsp;PIPELINE&nbsp;TD</span><i>/</i><span>TECHNICAL&nbsp;ARTIST</span><i>/</i><span>3D&nbsp;GENERALIST</span>
+      </p>
+      <p class="hero__tagline reveal" style="--d:.46s">
+        I build the invisible machinery that lets artists ship — developer-minded,
+        artist-hearted. Currently building Unreal production tools at <strong>WildBrain Studios</strong>.
+      </p>
+
+      <div class="hero__cta reveal" style="--d:.58s">
+        <a class="btn btn--primary" href="#work">
+          <span class="btn__bracket">[</span> VIEW SELECTED WORK <span class="btn__bracket">]</span>
+        </a>
+        <a class="btn btn--ghost" href="#contact">INITIATE CONTACT →</a>
+      </div>
+    </div>
+
+    <aside class="hero__spec reveal" style="--d:.7s" aria-label="Current status">
+      <p class="hero__spec-head mono">// pipeline_config — live</p>
+      <dl class="spec">
+        <div><dt class="mono">status</dt><dd><span class="pulse pulse--inline"></span>open to work</dd></div>
+        <div><dt class="mono">role</dt><dd>Unreal Pipeline TD</dd></div>
+        <div><dt class="mono">studio</dt><dd>WildBrain</dd></div>
+        <div><dt class="mono">scope</dt><dd class="accent">tools on framework</dd></div>
+        <div><dt class="mono">engine</dt><dd>UE 5.8</dd></div>
+        <div><dt class="mono">runtime</dt><dd>py 3.11</dd></div>
+      </dl>
+    </aside>
+
+    <div class="hero__marquee" aria-hidden="true">
+      <div class="marquee__track mono" id="marqueeTrack"></div>
+    </div>
+
+    <a class="hero__scroll mono" href="#work">
+      <span>SCROLL</span>
+      <span class="hero__scroll-line"></span>
+    </a>
+  </section>
+
+  <!-- ============ 01 SELECTED WORK ============ -->
+  <section class="section" id="work">
+    <header class="section__head reveal">
+      <p class="section__index mono">01 — SELECTED WORK</p>
+      <h2 class="section__title">Shipped under<br /><em>production pressure</em></h2>
+      <p class="section__note mono">// case files: pipeline → realtime → cinematics → games</p>
+    </header>
+
+    <div class="workgrid" id="workGrid"><!-- rendered by main.js --></div>
+  </section>
+
+  <!-- ============ STATS STRIP ============ -->
+  <section class="stats reveal" aria-label="Scope at a glance">
+    <div class="stats__item"><span class="stats__num" data-count="6">0</span><span class="stats__suffix"></span><p class="mono">production tools shipped<br/>import · crowd · light</p></div>
+    <div class="stats__item"><span class="stats__num" data-count="3">0</span><span class="stats__suffix"></span><p class="mono">C++ exposure areas<br/>enums · components · VAT</p></div>
+    <div class="stats__item"><span class="stats__num" data-count="4">0</span><span class="stats__suffix">+</span><p class="mono">years at WildBrain<br/>TA → Unreal Pipeline TD</p></div>
+    <div class="stats__item"><span class="stats__num" data-count="1">0</span><span class="stats__suffix"></span><p class="mono">engine, end to end<br/>unreal 5.8 · py 3.11</p></div>
+  </section>
+
+  <!-- ============ 02 ORIGINS ============ -->
+  <section class="section" id="origins">
+    <header class="section__head reveal">
+      <p class="section__index mono">02 — ORIGINS</p>
+      <h2 class="section__title">Where it<br /><em>started</em></h2>
+      <p class="section__note mono">// artstation field recordings — hard surface, creatures, realtime materials</p>
+    </header>
+    <div class="gallery" id="gallery"><!-- rendered by main.js --></div>
+    <p class="gallery__more reveal mono">
+      <a href="https://www.artstation.com/thisistheway" target="_blank" rel="noopener">↗ FULL ARCHIVE ON ARTSTATION</a>
+    </p>
+  </section>
+
+  <!-- ============ 03 ABOUT / TIMELINE ============ -->
+  <section class="section" id="about">
+    <header class="section__head reveal">
+      <p class="section__index mono">03 — ABOUT</p>
+      <h2 class="section__title">Chemist by degree,<br /><em>TD by obsession</em></h2>
+    </header>
+
+    <div class="about__cols">
+      <div class="about__bio reveal">
+        <p>
+          I started in a lab coat — troubleshooting HPLC instruments and co-authoring
+          nanoparticle research — then traded the bench for the viewport. The throughline
+          never changed: <strong>I love being the bridge between art and development</strong>,
+          diagnosing hard problems and handing the team a solution they can actually use.
+        </p>
+        <p>
+          Today I'm the Unreal Pipeline TD at WildBrain. The studio's pipeline framework
+          was built by a colleague — I build the <strong>production tool layer</strong> on top of it:
+          asset &amp; shot importers, crowd VAT baking, light rigs, turntable scripted actions and
+          a light mixer, dropping into C++ whenever Python runs out of road. The tools ship with
+          UE&nbsp;5.8, wired into ShotGrid, Perforce and the farm.
+        </p>
+        <p>
+          Before pipelines I shipped realtime: Unreal virtual production at BRON,
+          Netflix-bound 3D specials as a Technical Artist, marketing cinematics for
+          <em>Lords Mobile</em>, and two game projects at Vancouver Film School.
+        </p>
+        <ul class="about__facts mono">
+          <li><span>BASED</span>Vancouver, BC, Canada</li>
+          <li><span>FOCUS</span>Pipeline · Realtime · Tools UX</li>
+          <li><span>EDU</span>VFS Game Design · BCIT Technical Artist · BSc Chemistry</li>
+          <li><span>OFF-CLOCK</span>Hard-surface modelling · gamejam tinkering</li>
+        </ul>
+      </div>
+
+      <ol class="timeline" id="timeline"><!-- rendered by main.js --></ol>
+    </div>
+  </section>
+
+  <!-- ============ 04 STACK ============ -->
+  <section class="section" id="stack">
+    <header class="section__head reveal">
+      <p class="section__index mono">04 — STACK</p>
+      <h2 class="section__title">Tools of<br /><em>the trade</em></h2>
+    </header>
+    <div class="stackgrid" id="stackGrid"><!-- rendered by main.js --></div>
+  </section>
+
+  <!-- ============ 05 CONTACT ============ -->
+  <footer class="contact" id="contact">
+    <div class="contact__inner reveal">
+      <p class="contact__kicker mono">05 — CONTACT</p>
+      <h2 class="contact__title">
+        Got a pipeline that<br />needs <em>building?</em>
+      </h2>
+      <a class="contact__mail" href="mailto:weiwei2372@gmail.com">weiwei2372@gmail.com</a>
+      <div class="contact__links mono">
+        <a href="https://www.linkedin.com/in/williamweizeng/" target="_blank" rel="noopener">LINKEDIN ↗</a>
+        <a href="https://www.artstation.com/thisistheway" target="_blank" rel="noopener">ARTSTATION ↗</a>
+        <a href="https://www.imdb.com/title/tt29389870/" target="_blank" rel="noopener">IMDB ↗</a>
+      </div>
+    </div>
+    <div class="contact__foot mono">
+      <span>© <span id="year"></span> WEI ZENG</span>
+      <span>BUILT BY HAND — NO TEMPLATE WAS DEPLOYED</span>
+      <span>VANCOUVER LOCAL TIME <i id="footClock">--:--</i></span>
+    </div>
+  </footer>
+
+</main>
+
+<script src="main.js?v=5"></script>
+</body>
+</html>
