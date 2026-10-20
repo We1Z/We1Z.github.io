@@ -5,10 +5,14 @@
    Old dark-terminal version: git show 81d683e:main.js
    ============================================================ */
 
-/* ---------- SELECTED WORK ----------
-   Empty while the section is replanned. Card markup is ready:
-   add { title, img, alt, href, wide:true? } and the grid renders. */
-const work = [];
+/* ---------- SELECTED WORK ---------- */
+const work = [
+  { title: "NBB Asset Manager — Blender Pipeline Addon",
+    img: "assets/work/nbb_asset_manager.jpg",
+    alt: "NBB Asset Manager — scan-based asset pipeline addon for Blender",
+    href: "projects/nbb-asset-manager.html",
+    wide: true }
+];
 
 /* ---------- ORIGINS (ArtStation archive) ---------- */
 const origins = [
@@ -37,14 +41,14 @@ const experience = [
 
 /* ---------- EDUCATION ---------- */
 const education = [
-  { role: "Technical Artist Certificate", org: "British Columbia Institute of Technology", date: "2023 — 2024" },
+  { role: "Technical Artist Diploma", org: "British Columbia Institute of Technology", date: "2023 — 2024" },
   { role: "Game Design Diploma", org: "Vancouver Film School", date: "2020 — 2021" },
   { role: "BSc Chemistry", org: "University of Calgary", date: "2014 — 2018" }
 ];
 
 /* ---------- SKILLS (grouped) ---------- */
 const skills = [
-  { group: "Pipeline & Code", items: ["Python", "MEL", "Bash / Shell", "JSON · YAML", "Git · GitLab CI", "ShotGrid / sgtk", "Perforce"] },
+  { group: "Pipeline & Code", items: ["Python", "JSON", "Git", "ShotGrid / sgtk", "Perforce"] },
   { group: "Engines & DCC", items: ["Unreal Engine 5", "Maya", "Houdini", "Blender", "Unity", "ZBrush", "Substance Suite"] },
   { group: "3D Craft", items: ["Hard-Surface Modeling", "Character Rigging", "Texturing & Surfacing", "Lighting & Rendering", "Set Dressing", "Realtime Materials"] }
 ];
@@ -56,7 +60,7 @@ document.getElementById("workGrid").innerHTML = work.length === 0
   ? `<p class="workgrid__empty reveal">Case studies in curation — new writeups shipping soon.</p>`
   : work.map((item, i) => `
     <figure class="wcard${item.wide ? " wcard--wide" : ""} reveal" style="--d:${Math.min(i * .07, .28)}s">
-      ${item.href ? `<a href="${item.href}" target="_blank" rel="noopener">` : ""}
+      ${item.href ? `<a href="${item.href}"${/^https?:/.test(item.href) ? ' target="_blank" rel="noopener"' : ""}>` : ""}
         <img src="${item.img}" alt="${item.alt || item.title}" loading="lazy" />
         <figcaption><span>${item.title}</span><span class="wcard__arrow">→</span></figcaption>
       ${item.href ? `</a>` : ""}
