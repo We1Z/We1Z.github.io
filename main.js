@@ -142,3 +142,62 @@ document.getElementById("skillsGrid").innerHTML = `<div class="sgroups">` + skil
   }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
   els.forEach(el => io.observe(el));
 })();
+
+/* ---------- hero name: magnetic letters ----------
+   Splits the h1 into spans; letters near the cursor are pushed
+   away and tinted with the theme accent, then drift back. */
+(function () {
+  const nameEl = document.querySelector(".hero__name");
+  if (!nameEl || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  const text = nameEl.textContent.trim();
+  nameEl.setAttribute("aria-label", text);
+  nameEl.textContent = "";
+  const letters = [...text].map(ch => {
+    const s = document.createElement("span");
+    s.textContent = ch;
+    s.setAttribute("aria-hidden", "true");
+    if (ch === " ") s.style.whiteSpace = "pre";
+    nameEl.appendChild(s);
+    return s;
+  });
+
+  const RADIUS = 170;   // influence distance from cursor (px)
+  const PUSH = 0.6;     // horizontal repel strength
+  const LIFT = 14;      // max upward drift for the closest letter (px)
+  let raf = 0, mx = 0, my = 0, active = false, centers = null;
+
+  const measure = () =>
+    letters.map(s => {
+      const r = s.getBoundingClientRect();
+      return r.left + r.width / 2;
+    });
+
+  const apply = () => {
+    raf = 0;
+    if (active && centers === null) centers = measure();
+    letters.forEach((s, i) => {
+      if (!active || centers === null) { s.style.transform = ""; s.style.color = ""; return; }
+      const r = s.getBoundingClientRect();
+      const cy = r.top + r.height / 2;
+      const dx = centers[i] - mx, dy = cy - my;
+      const dist = Math.hypot(dx, dy);
+      if (dist >= RADIUS) { s.style.transform = ""; s.style.color = ""; return; }
+      const f = 1 - dist / RADIUS;              // 0 at edge, 1 at cursor
+      const ux = dist > 0.01 ? dx / dist : (i % 2 ? 1 : -1);
+      s.style.transform =
+        `translate(${(ux * f * f * RADIUS * PUSH).toFixed(1)}px, ${(-f * LIFT).toFixed(1)}px)`;
+      s.style.color = f > 0.5 ? "var(--sky)" : "";
+    });
+  };
+
+  nameEl.addEventListener("mouseenter", () => { centers = null; });
+  nameEl.addEventListener("mousemove", e => {
+    mx = e.clientX; my = e.clientY; active = true;
+    if (!raf) raf = requestAnimationFrame(apply);
+  });
+  nameEl.addEventListener("mouseleave", () => {
+    active = false; centers = null;
+    if (!raf) raf = requestAnimationFrame(apply);
+  });
+})();
