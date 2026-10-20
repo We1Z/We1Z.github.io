@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NBB Asset Manager — Wei Zeng</title>
+<meta name="description" content="Interactive demo: a scan-based asset pipeline addon for Blender 4.2+ — browse assets, create new ones, version, publish. Designed and built by Wei Zeng." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../styles.css" />
+<script>
+(async function () {
+  try {
+    const cfg = await (await fetch("../theme.json")).json();
+    const t = cfg.themes[cfg.active];
+    if (!t) return;
+    window.__wzTheme = t;
+    const mode = localStorage.getItem("wz-theme") === "night" ? "night" : "day";
+    const pal = t[mode] || t.day || t;
+    const root = document.documentElement.style;
+    for (const k in pal) if (!k.startsWith("_")) root.setProperty("--" + k, pal[k]);
+  } catch (e) {}
+})();
+</script>
+<script>
+try {
+  if (localStorage.getItem("wz-theme") === "night")
+    document.documentElement.setAttribute("data-theme", "night");
+} catch (e) {}
+</script>
+<style>
+/* ============ page chrome (tokens from ../styles.css) ============ */
+.cs-hero { background: var(--gold); color: #fff; padding: clamp(44px, 7vh, 88px) 5vw; }
+.cs-hero__kicker { font-size: .82rem; opacity: .85; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 14px; }
+.cs-hero__title { font-size: clamp(2.4rem, 6.5vw, 5.5rem); line-height: 1; font-weight: 700; letter-spacing: -.02em; margin-bottom: 20px; }
+.cs-hero__sub { font-size: clamp(1.05rem, 1.6vw, 1.35rem); font-weight: 500; max-width: 54ch; opacity: .95; }
+.cs-hero__meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+.cs-hero__meta span { border: 1.5px solid rgba(255,255,255,.55); border-radius: 999px; padding: 6px 16px; font-size: .82rem; }
+.cs-body { padding: clamp(48px, 7vh, 84px) 5vw; max-width: 1240px; margin: 0 auto; }
+.cs-sec { margin-bottom: clamp(48px, 7vh, 76px); }
+.cs-sec h2 { color: var(--gold-deep); font-size: clamp(1.35rem, 2.4vw, 1.9rem); font-weight: 700; letter-spacing: -.01em; margin-bottom: 16px; }
+.cs-sec p { color: var(--ink); max-width: 66ch; margin-bottom: 12px; }
+.cs-sec .dim { color: var(--ink-soft); }
+.cs-back { display: inline-block; font-size: .9rem; text-decoration: none; border-bottom: 1.5px solid var(--gold); padding-bottom: 2px; }
+.cs-back:hover { color: var(--gold-deep); }
+
+.hood { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 20px; }
+.hood__item { border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; }
+.hood__item h3 { font-size: .95rem; font-weight: 700; margin-bottom: 6px; color: var(--gold-deep); }
+.hood__item p { font-size: .86rem; color: var(--ink-soft); margin: 0; }
+
+/* ============ THE DEMO ============ */
+.demo-hint { display: flex; align-items: center; gap: 10px; font-size: .88rem; color: var(--ink-soft); margin: 18px 0 14px; }
+.demo-hint .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--gold); flex: none; animation: pulse 1.8s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: .35; } }
+
+.demo {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0,0,0,.28);
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  border: 1px solid rgba(0,0,0,.35);
+  font-family: "Archivo", sans-serif;
+  user-select: none;
+}
+
+/* ---- explorer (OS world — neutral light) ---- */
+.xpl { background: #f4f2ed; color: #2a2c28; display: flex; flex-direction: column; min-height: 560px; }
+.xpl__bar { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: #e9e6de; border-bottom: 1px solid #d8d4c8; font-size: .82rem; font-weight: 600; }
+.xpl__bar .lights { display: flex; gap: 6px; }
+.xpl__bar .lights i { width: 11px; height: 11px; border-radius: 50%; display: block; }
+.xpl__bar .lights i:nth-child(1){background:#ec6a5e} .xpl__bar .lights i:nth-child(2){background:#f4bf4f} .xpl__bar .lights i:nth-child(3){background:#61c454}
+.xpl__path { margin-left: 6px; color: #6b6e64; font-family: ui-monospace, Menlo, monospace; font-size: .74rem; font-weight: 400; }
+.xpl__tree { padding: 14px 12px; overflow-y: auto; font-size: .86rem; line-height: 1.4; flex: 1; }
+.xrow { display: flex; align-items: center; gap: 7px; padding: 4px 8px; border-radius: 6px; white-space: nowrap; }
+.xrow--dir { font-weight: 600; cursor: default; }
+.xrow--file { color: #4c4f47; font-family: ui-monospace, Menlo, monospace; font-size: .78rem; }
+.xrow .caret { width: 10px; color: #9a9d92; font-size: .7rem; flex: none; }
+.xrow .ficon { width: 15px; height: 15px; flex: none; }
+@keyframes flashbg { 0% { background: #ffe9b8; } 100% { background: transparent; } }
+.xrow.flash { animation: flashbg 2.2s ease-out; }
+.xrow.spot { outline: 2px solid #d9a441; outline-offset: -1px; background: #ffefd0; }
+
+/* ---- blender panel (Blender world — dark) ---- */
+.bp { background: #282c28; color: #e6e9e2; display: flex; flex-direction: column; min-height: 560px; border-left: 1px solid #14161400; }
+.bp__tabs { display: flex; gap: 14px; padding: 10px 16px; font-size: .78rem; color: #9aa395; border-bottom: 1px solid rgba(255,255,255,.08); }
+.bp__tabs b { color: #e6e9e2; font-weight: 600; }
+.bp__title { padding: 12px 16px 10px; font-size: .95rem; font-weight: 700; letter-spacing: .02em; }
+.bp__file { margin: 0 16px 10px; font-size: .72rem; color: #9aa395; font-family: ui-monospace, Menlo, monospace; }
+.bp__file b { color: #d8dce0; font-weight: 500; }
+.bp__root { margin: 0 16px 10px; display: flex; align-items: center; gap: 8px; background: #1e211e; border: 1px solid rgba(255,255,255,.09); border-radius: 6px; padding: 7px 10px; font-family: ui-monospace, Menlo, monospace; font-size: .72rem; color: #c9cec2; }
+.bp__body { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.bp__btn { border: 0; border-radius: 6px; background: #454a44; color: #eef0ea; font-family: inherit; font-size: .82rem; font-weight: 600; padding: 9px 12px; cursor: pointer; transition: filter .15s, transform .1s; }
+.bp__btn:hover { filter: brightness(1.18); }
+.bp__btn:active { transform: scale(.98); }
+.bp__btn--accent { background: #d9a441; color: #241c08; }
+.bp__btn--row { display: flex; gap: 8px; }
+.bp__btn--row .bp__btn { flex: 1; }
+.bp__status { font-size: .76rem; color: #b9c0ae; min-height: 1.1em; display: flex; align-items: center; gap: 7px; }
+.bp__status.err { color: #ef9a8e; }
+.bp__label { font-size: .7rem; text-transform: uppercase; letter-spacing: .09em; color: #8d978a; margin-top: 4px; }
+.bp__typesel { background: #1e211e; color: #e6e9e2; border: 1px solid rgba(255,255,255,.12); border-radius: 6px; font-family: inherit; font-size: .8rem; padding: 7px 9px; width: 100%; cursor: pointer; }
+.bp__list { background: #1e211e; border: 1px solid rgba(255,255,255,.08); border-radius: 8px; min-height: 96px; max-height: 168px; overflow-y: auto; padding: 5px; }
+.bp__item .ficon, .bp__ver .ficon { width: 13px; height: 13px; flex: none; }
+.bp__item { display: flex; align-items: center; gap: 9px; padding: 7px 10px; border-radius: 5px; font-size: .82rem; cursor: pointer; }
+.bp__item:hover { background: rgba(255,255,255,.06); }
+.bp__item.sel { background: #56749e; color: #fff; }
+.bp__item .counts { margin-left: auto; font-size: .7rem; opacity: .75; font-family: ui-monospace, Menlo, monospace; }
+.bp__ver { display: flex; align-items: center; gap: 9px; padding: 6px 10px; border-radius: 5px; font-family: ui-monospace, Menlo, monospace; font-size: .74rem; cursor: pointer; }
+.bp__ver:hover { background: rgba(255,255,255,.06); }
+.bp__ver.sel { background: #56749e; color: #fff; }
+.bp__ver .tag { margin-left: auto; font-size: .64rem; padding: 1px 8px; border-radius: 99px; background: rgba(255,255,255,.14); font-family: "Archivo", sans-serif; }
+.bp__ver .tag.pub { background: #4a7043; color: #e8f4df; }
+.bp__empty { padding: 14px 12px; font-size: .76rem; color: #7d857a; }
+@keyframes slidein { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: none; } }
+.bp__item, .bp__ver { animation: slidein .25s ease-out; }
+
+/* ---- modal (New Asset dialog, like invoke_props_dialog) ---- */
+.modal { position: fixed; inset: 0; display: none; place-items: center; background: rgba(10,12,10,.5); z-index: 300; }
+.modal.on { display: grid; }
+.modal__box { width: min(380px, 90vw); background: #2e332e; border: 1px solid rgba(255,255,255,.14); border-radius: 12px; padding: 20px; color: #e6e9e2; box-shadow: 0 24px 70px rgba(0,0,0,.5); }
+.modal__box h3 { font-size: .95rem; margin-bottom: 14px; }
+.modal__box label { display: block; font-size: .76rem; color: #aab3a3; margin-bottom: 5px; }
+.modal__box input[type=text] { width: 100%; background: #1e211e; border: 1px solid rgba(255,255,255,.16); border-radius: 6px; color: #fff; font-family: inherit; font-size: .86rem; padding: 9px 10px; margin-bottom: 12px; }
+.modal__check { display: flex; align-items: center; gap: 8px; font-size: .8rem; margin-bottom: 16px; cursor: pointer; }
+.modal__btns { display: flex; justify-content: flex-end; gap: 8px; }
+
+/* ---- toast ---- */
+.toast { position: fixed; bottom: 26px; right: 26px; background: #232a25; color: #e9ede4; border: 1px solid rgba(255,255,255,.16); border-left: 3px solid #d9a441; border-radius: 10px; padding: 12px 18px; font-size: .84rem; box-shadow: 0 16px 44px rgba(0,0,0,.4); opacity: 0; transform: translateY(8px); transition: opacity .25s, transform .25s; z-index: 400; pointer-events: none; max-width: 320px; }
+.toast.on { opacity: 1; transform: none; }
+
+@media (max-width: 900px) {
+  .demo { grid-template-columns: 1fr; }
+  .hood { grid-template-columns: 1fr; }
+  .xpl { min-height: 320px; }
+}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <a class="nav__brand" href="../index.html">Wei Zeng</a>
+  <nav class="nav__links" aria-label="Primary">
+    <a href="../index.html#work">← Selected Work</a>
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle day / night mode">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4.4"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5 5l1.7 1.7M17.3 17.3L19 19M19 5l-1.7 1.7M6.7 17.3L5 19"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.4 14.2A8.5 8.5 0 1 1 9.8 3.6a7 7 0 1 0 10.6 10.6z"/></svg>
+    </button>
+  </nav>
+</header>
+
+<main>
+
+  <section class="cs-hero">
+    <p class="cs-hero__kicker">Pipeline Tooling — Interactive Demo</p>
+    <h1 class="cs-hero__title">NBB Asset Manager</h1>
+    <p class="cs-hero__sub">A Blender addon that gives artists a proper asset library — browse, create, version and publish — without a database. The folder tree <em>is</em> the database. Try the live demo below.</p>
+    <div class="cs-hero__meta">
+      <span>Python</span><span>Blender 4.2+</span><span>bpy</span><span>Zero-DB design</span>
+    </div>
+  </section>
+
+  <div class="cs-body">
+
+    <section class="cs-sec">
+      <h2>What it does</h2>
+      <p>Every asset lives in a conventional folder: <span class="dim">Assets / Type / Asset / work · publish · review</span>. Artists work in <strong>work</strong>, and when a version is approved it gets promoted to <strong>publish</strong> — same number, blessed copy. The addon scans that tree and puts it one click away inside Blender: scan the project, create a new asset, open any version, save the next one, publish the approved one.</p>
+    </section>
+
+    <section class="cs-sec">
+      <h2>Try it</h2>
+      <div class="demo-hint"><span class="dot"></span> Fully clickable — the panel on the right behaves like the real addon, and the explorer on the left shows what it does to the files.</div>
+
+      <div class="demo" id="demo">
+        <!-- explorer -->
+        <div class="xpl">
+          <div class="xpl__bar">
+            <span class="lights"><i></i><i></i><i></i></span>
+            Explorer <span class="xpl__path">F:\NBB\Assets</span>
+          </div>
+          <div class="xpl__tree" id="xplTree"></div>
+        </div>
+
+        <!-- blender panel -->
+        <div class="bp">
+          <div class="bp__tabs"><span>Item</span><span>Tool</span><span>View</span><b>NBB Assets</b></div>
+          <div class="bp__title">NBB Asset Manager</div>
+          <div class="bp__file">Current file: <b id="curFile">untitled.blend</b></div>
+          <div class="bp__root">📁 F:\NBB</div>
+          <div class="bp__body">
+            <div class="bp__btn--row">
+              <button class="bp__btn" id="btnScan">⟳&nbsp; Scan Assets</button>
+              <button class="bp__btn" id="btnNew">＋&nbsp; New Asset</button>
+            </div>
+            <div class="bp__status" id="status">Press “Scan Assets” to browse the project.</div>
+            <div class="bp__label">Type</div>
+            <select class="bp__typesel" id="typeSel"></select>
+            <div class="bp__label">Assets</div>
+            <div class="bp__list" id="assetList"><div class="bp__empty">— not scanned yet —</div></div>
+            <div class="bp__label" id="verLabel">Versions</div>
+            <div class="bp__list" id="verList"><div class="bp__empty">— select an asset —</div></div>
+            <div class="bp__btn--row">
+              <button class="bp__btn" id="btnLoad">⤓&nbsp; Load Version</button>
+              <button class="bp__btn bp__btn--accent" id="btnPublish">✓&nbsp; Publish Version</button>
+            </div>
+            <div class="bp__btn--row">
+              <button class="bp__btn" id="btnSave">💾&nbsp; Save Work Version</button>
+              <button class="bp__btn" id="btnReveal">🗂&nbsp; Open in Explorer</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cs-sec">
+      <h2>Under the hood</h2>
+      <div class="hood">
+        <div class="hood__item"><h3>Filesystem as truth</h3><p>No database, no daemon. A folder convention plus a version regex is the whole schema — anything can read it, nothing can corrupt it.</p></div>
+        <div class="hood__item"><h3>Swappable backend</h3><p>All data flows through a 5-method provider interface. Pointing the same UI at ShotGrid or AYON later means writing one new class, nothing else changes.</p></div>
+        <div class="hood__item"><h3>Fail-fast config</h3><p>Layered TOML settings merge package defaults with per-studio overrides — and a missing or broken config raises loudly instead of silently degrading.</p></div>
+      </div>
+    </section>
+
+    <a class="cs-back" href="../index.html#work">← Back to Selected Work</a>
+  </div>
+
+</main>
+
+<!-- New Asset dialog -->
+<div class="modal" id="modal">
+  <div class="modal__box">
+    <h3>New Asset</h3>
+    <label for="newName">Asset Name</label>
+    <input type="text" id="newName" value="new_asset" spellcheck="false" />
+    <label class="modal__check"><input type="checkbox" id="openAfter" checked /> Open file after creation</label>
+    <div class="modal__btns">
+      <button class="bp__btn" id="btnCancel">Cancel</button>
+      <button class="bp__btn bp__btn--accent" id="btnCreate">Create</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= DEMO STATE — mirrors the real folder convention ================= */
+const RESERVED = ["work", "publish", "review", "_refs", "_textures"];
+const PAD = 3;
+const FS = {
+  "Props": {
+    "crate":    { work: ["crate_v001.blend", "crate_v002.blend", "crate_v003.blend"], publish: ["crate_v001.blend"] },
+    "barrel":   { work: ["barrel_v001.blend", "barrel_v002.blend"], publish: [] },
+    "oil_lamp": { work: ["oil_lamp_v001.blend"], publish: [] }
+  },
+  "Characters": {
+    "fox":   { work: ["fox_v001.blend", "fox_v002.blend"], publish: ["fox_v002.blend"] },
+    "robot": { work: ["robot_v001.blend"], publish: [] }
+  }
+};
+
+const S = { type: null, asset: null, ver: null, scanned: false };
+
+const $ = id => document.getElementById(id);
+const statusEl = $("status");
+
+function status(msg, isErr) {
+  statusEl.textContent = msg;
+  statusEl.classList.toggle("err", !!isErr);
+}
+function toast(msg) {
+  const t = $("toast");
+  t.textContent = msg;
+  t.classList.add("on");
+  clearTimeout(t._h);
+  t._h = setTimeout(() => t.classList.remove("on"), 2600);
+}
+function nextVersion(name, workList) {
+  let max = 0;
+  const re = /_v(\d+)\.blend$/i;
+  workList.forEach(f => { const m = f.match(re); if (m) max = Math.max(max, parseInt(m[1], 10)); });
+  return name + "_v" + String(max + 1).padStart(PAD, "0") + ".blend";
+}
+
+/* ================= EXPLORER ================= */
+const folderSVG = `<svg class="ficon" viewBox="0 0 16 16"><path d="M1.5 3.5h4l1.5 2h7.5v7a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1v-9z" fill="#d9a441"/></svg>`;
+const blendSVG  = `<svg class="ficon" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="2" fill="#56749e"/><circle cx="8" cy="8" r="3" fill="none" stroke="#fff" stroke-width="1.4"/></svg>`;
+
+function renderExplorer(flashPaths) {
+  const tree = $("xplTree");
+  let html = "";
+  for (const type of Object.keys(FS).sort()) {
+    html += `<div class="xrow xrow--dir${flashPaths?.has(type) ? " flash" : ""}" data-spot="type:${type}"><span class="caret">▾</span>${folderSVG}${type}/</div>`;
+    for (const asset of Object.keys(FS[type]).sort()) {
+      const key = `${type}/${asset}`;
+      html += `<div class="xrow xrow--dir" data-spot="${key}" style="padding-left:26px"><span class="caret">▾</span>${folderSVG}${asset}/</div>`;
+      const a = FS[type][asset];
+      for (const sub of ["work", "publish", "review"]) {
+        const subKey = `${key}/${sub}`;
+        const isFlash = flashPaths?.has(subKey);
+        html += `<div class="xrow xrow--dir${isFlash ? " flash" : ""}" data-spot="${subKey}" style="padding-left:52px"><span class="caret">${a[sub] ? "▾" : ""}</span>${folderSVG}${sub}/</div>`;
+        (a[sub] || []).forEach(f => {
+          html += `<div class="xrow xrow--file${isFlash ? " flash" : ""}" style="padding-left:80px">${blendSVG}${f}</div>`;
+        });
+      }
+    }
+  }
+  tree.innerHTML = html;
+}
+
+/* ================= PANEL ================= */
+function renderTypes() {
+  const sel = $("typeSel");
+  sel.innerHTML = Object.keys(FS).sort().map(t => `<option${t === S.type ? " selected" : ""}>${t}</option>`).join("");
+}
+
+function renderAssets() {
+  const list = $("assetList");
+  if (!S.scanned) { list.innerHTML = `<div class="bp__empty">— not scanned yet —</div>`; return; }
+  const assets = FS[S.type] || {};
+  const names = Object.keys(assets).filter(n => !RESERVED.includes(n)).sort();
+  if (!names.length) { list.innerHTML = `<div class="bp__empty">— no assets in ${S.type} —</div>`; return; }
+  list.innerHTML = names.map(n => {
+    const a = assets[n];
+    return `<div class="bp__item${n === S.asset ? " sel" : ""}" data-asset="${n}">${folderSVG}${n}<span class="counts">W:${a.work.length} P:${a.publish.length}</span></div>`;
+  }).join("");
+  list.querySelectorAll(".bp__item").forEach(el =>
+    el.addEventListener("click", () => { S.asset = el.dataset.asset; S.ver = null; renderAssets(); renderVersions(); })
+  );
+}
+
+function renderVersions() {
+  const list = $("verList");
+  $("verLabel").textContent = S.asset ? `Versions: ${S.asset}` : "Versions";
+  if (!S.asset || !FS[S.type]?.[S.asset]) { list.innerHTML = `<div class="bp__empty">— select an asset —</div>`; return; }
+  const a = FS[S.type][S.asset];
+  const rows = [
+    ...a.work.map(f => ({ f, src: "work" })),
+    ...a.publish.map(f => ({ f, src: "publish" }))
+  ];
+  if (!rows.length) { list.innerHTML = `<div class="bp__empty">— no versions yet —</div>`; return; }
+  list.innerHTML = rows.map(r =>
+    `<div class="bp__ver${S.ver === r.f && S.verSrc === r.src ? " sel" : ""}" data-f="${r.f}" data-src="${r.src}">${blendSVG}${r.f}<span class="tag${r.src === "publish" ? " pub" : ""}">${r.src}</span></div>`
+  ).join("");
+  list.querySelectorAll(".bp__ver").forEach(el =>
+    el.addEventListener("click", () => { S.ver = el.dataset.f; S.verSrc = el.dataset.src; renderVersions(); })
+  );
+}
+
+/* ================= OPERATORS (faithful to the real ones) ================= */
+$("btnScan").addEventListener("click", () => {
+  const types = Object.keys(FS).sort();
+  if (!types.length) { status("No asset type folders found under Assets/", true); return; }
+  if (!S.type || !FS[S.type]) S.type = types[0];
+  renderTypes();
+  S.scanned = true;
+  const names = Object.keys(FS[S.type]).filter(n => !RESERVED.includes(n));
+  status(`Found ${names.length} assets in ${S.type}`);
+  if (!S.asset || !FS[S.type][S.asset]) { S.asset = names.sort()[0] || null; S.ver = null; }
+  renderAssets(); renderVersions();
+});
+
+$("typeSel").addEventListener("change", e => {
+  S.type = e.target.value; S.asset = null; S.ver = null;
+  const names = Object.keys(FS[S.type]).filter(n => !RESERVED.includes(n));
+  status(`Found ${names.length} assets in ${S.type}`);
+  S.asset = names.sort()[0] || null;
+  renderAssets(); renderVersions();
+});
+
+$("btnNew").addEventListener("click", () => {
+  if (!S.scanned) { status("Scan the project first.", true); return; }
+  $("modal").classList.add("on");
+  $("newName").value = "new_asset";
+  setTimeout(() => $("newName").select(), 30);
+});
+$("btnCancel").addEventListener("click", () => $("modal").classList.remove("on"));
+$("modal").addEventListener("click", e => { if (e.target.id === "modal") $("modal").classList.remove("on"); });
+
+$("btnCreate").addEventListener("click", () => {
+  let name = $("newName").value.trim().toLowerCase().replace(/\s+/g, "_");
+  $("modal").classList.remove("on");
+  if (!name) { status("Invalid asset name", true); return; }
+  if (FS[S.type][name]) { status(`Asset '${name}' already exists`, true); return; }
+  FS[S.type][name] = { work: [], publish: [], review: [] };
+  const fname = nextVersion(name, []);
+  FS[S.type][name].work.push(fname);
+  renderExplorer(new Set([`${S.type}/${name}`, `${S.type}/${name}/work`, `${S.type}/${name}/publish`, `${S.type}/${name}/review`]));
+  S.asset = name; S.ver = null;
+  status(`Created asset '${name}'`);
+  renderAssets(); renderVersions();
+  if ($("openAfter").checked) { $("curFile").textContent = fname; toast(`Opened ${fname}`); }
+});
+
+$("btnLoad").addEventListener("click", () => {
+  if (!S.ver) { status("No version selected", true); return; }
+  $("curFile").textContent = S.ver;
+  status(`Opened ${S.ver}`);
+  toast(`Blender opens ${S.ver} — current scene replaced`);
+});
+
+$("btnSave").addEventListener("click", () => {
+  if (!S.asset) { status("No asset selected", true); return; }
+  const a = FS[S.type][S.asset];
+  const fname = nextVersion(S.asset, a.work);
+  a.work.push(fname);
+  renderExplorer(new Set([`${S.type}/${S.asset}/work`]));
+  status(`Saved ${fname}`);
+  renderAssets(); renderVersions();
+});
+
+$("btnPublish").addEventListener("click", () => {
+  if (!S.asset) { status("No asset selected", true); return; }
+  if (!S.ver) { status("No version selected", true); return; }
+  if (S.verSrc !== "work") { status("Select a work version to publish", true); return; }
+  const a = FS[S.type][S.asset];
+  if (!a.publish.includes(S.ver)) a.publish.push(S.ver);
+  renderExplorer(new Set([`${S.type}/${S.asset}/publish`]));
+  status(`Published ${S.ver}`);
+  renderAssets(); renderVersions();
+});
+
+$("btnReveal").addEventListener("click", () => {
+  if (!S.asset) { status("No asset selected", true); return; }
+  renderExplorer();
+  const row = document.querySelector(`[data-spot="${S.type}/${S.asset}"]`);
+  if (row) {
+    row.classList.add("spot");
+    row.scrollIntoView({ block: "center", behavior: "smooth" });
+    setTimeout(() => row.classList.remove("spot"), 2200);
+  }
+  status(`Revealed ${S.asset} in Explorer`);
+});
+
+/* ================= boot ================= */
+renderExplorer();
+renderTypes();
+renderAssets();
+renderVersions();
+
+/* day/night toggle */
+(function () {
+  const btn = document.getElementById("themeToggle");
+  const rootEl = document.documentElement;
+  btn.addEventListener("click", () => {
+    const night = rootEl.getAttribute("data-theme") !== "night";
+    if (night) rootEl.setAttribute("data-theme", "night");
+    else rootEl.removeAttribute("data-theme");
+    try { localStorage.setItem("wz-theme", night ? "night" : "day"); } catch (e) {}
+    if (window.__wzTheme) {
+      const pal = window.__wzTheme[night ? "night" : "day"] || window.__wzTheme.day || window.__wzTheme;
+      for (const k in pal) if (!k.startsWith("_")) rootEl.style.setProperty("--" + k, pal[k]);
+    }
+  });
+})();
+</script>
+</body>
+</html>
