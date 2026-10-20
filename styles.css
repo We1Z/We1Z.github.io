@@ -135,6 +135,18 @@ img { display: block; max-width: 100%; }
   border-radius: 12px;
 }
 .hphoto figcaption { font-size: .82rem; margin-top: 10px; opacity: .9; }
+.hphoto {
+  position: relative;
+  transition: transform .4s var(--ease);
+  will-change: transform;
+}
+.hphoto:hover {
+  transform: translateY(-8px) scale(1.07);
+  z-index: 5;
+}
+.hphoto:hover img { box-shadow: 0 24px 60px rgba(0,0,0,.35); }
+.hphoto:hover figcaption { opacity: 1; }
+.hphoto img { transition: box-shadow .4s var(--ease); }
 
 /* ============ SECTIONS ============ */
 .section { padding: clamp(70px, 12vh, 140px) 5vw 0; max-width: 1560px; margin: 0 auto; }
