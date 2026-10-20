@@ -1,6 +1,6 @@
 {
   "_readme": "Theme config — edit and refresh. 'active' picks the preset; each preset has a 'day' and 'night' palette. The loader (index.html) applies every key as a CSS variable, and the nav toggle switches palettes (choice saved in the browser). If opened via file:// the site falls back to the palettes baked into styles.css.",
-  "active": "studio",
+  "active": "forest",
   "themes": {
     "studio": {
       "_note": "light editorial CV — olive gold blocks + sky blue accents (Wix wh-1327 palette)",
@@ -25,6 +25,56 @@
         "ink-soft": "#A79E8B",
         "line": "#2e2a20",
         "on-sky": "#1c1a16"
+      }
+    },
+    "slate": {
+      "_note": "safe tech — slate blue blocks + amber accents",
+      "day": {
+        "gold": "#33527B",
+        "gold-deep": "#26405E",
+        "sky": "#F2A93B",
+        "sky-deep": "#DD9421",
+        "paper": "#ffffff",
+        "ink": "#16181D",
+        "ink-soft": "#525D6B",
+        "line": "#E1E6ED",
+        "on-sky": "#16181D"
+      },
+      "night": {
+        "gold": "#33527B",
+        "gold-deep": "#8FB0D8",
+        "sky": "#F2A93B",
+        "sky-deep": "#DD9421",
+        "paper": "#12161D",
+        "ink": "#E9ECF2",
+        "ink-soft": "#9AA6B5",
+        "line": "#262D38",
+        "on-sky": "#16181D"
+      }
+    },
+    "forest": {
+      "_note": "premium studio — deep forest green blocks + sand accents",
+      "day": {
+        "gold": "#1F4A38",
+        "gold-deep": "#16372A",
+        "sky": "#E8DCC8",
+        "sky-deep": "#D6C3A4",
+        "paper": "#FDFBF6",
+        "ink": "#1A1C19",
+        "ink-soft": "#5B6058",
+        "line": "#E6E0D2",
+        "on-sky": "#1A1C19"
+      },
+      "night": {
+        "gold": "#1F4A38",
+        "gold-deep": "#A3C9B5",
+        "sky": "#E8DCC8",
+        "sky-deep": "#D6C3A4",
+        "paper": "#10140F",
+        "ink": "#EBE9DF",
+        "ink-soft": "#A8AC9C",
+        "line": "#272B22",
+        "on-sky": "#1A1C19"
       }
     }
   }
