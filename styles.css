@@ -1,31 +1,30 @@
 /* ============================================================
    WEI ZENG — PORTFOLIO
    Art direction: light editorial CV
-   Olive-gold blocks · sky-blue accents · Archivo
-   Recolor via theme.json (loader overrides the vars below)
+   Palette presets live in theme.json (vars below = active-preset fallback) · Archivo
    ============================================================ */
 
 :root {
-  --gold:      #8B6522;
-  --gold-deep: #694F23;
-  --sky:       #A8D2FF;
-  --sky-deep:  #86BDF5;
-  --paper:     #ffffff;
-  --ink:       #1c1a16;
-  --ink-soft:  #5c5648;
-  --line:      #e7e1d3;
-  --on-sky:    #1c1a16;
+  --gold:      #1F4A38;
+  --gold-deep: #16372A;
+  --sky:       #E8DCC8;
+  --sky-deep:  #D6C3A4;
+  --paper:     #FDFBF6;
+  --ink:       #1A1C19;
+  --ink-soft:  #5B6058;
+  --line:      #E6E0D2;
+  --on-sky:    #1A1C19;
   --font:      "Archivo", "Helvetica Neue", sans-serif;
   --ease:      cubic-bezier(.22, 1, .36, 1);
 }
 
 /* night palette — toggled via [data-theme="night"] on <html> (theme.json can override) */
 [data-theme="night"] {
-  --gold-deep: #C9A86A;
-  --paper:     #171410;
-  --ink:       #EDE8DC;
-  --ink-soft:  #A79E8B;
-  --line:      #2e2a20;
+  --gold-deep: #A3C9B5;
+  --paper:     #10140F;
+  --ink:       #EBE9DF;
+  --ink-soft:  #A8AC9C;
+  --line:      #272B22;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
