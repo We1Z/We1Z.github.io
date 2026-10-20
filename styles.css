@@ -141,7 +141,7 @@ img { display: block; max-width: 100%; }
   will-change: transform;
 }
 .hphoto:hover {
-  transform: translateY(-10px) scale(1.15);
+  transform: translateY(-10px) scale(3);
   z-index: 5;
 }
 .hphoto:hover img { box-shadow: 0 24px 60px rgba(0,0,0,.35); }
